@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Motor de Cálculo - Rescisão CLT</title>
+</head>
+<body>
+  <p style="font-family:sans-serif;color:#888;font-size:12px">Motor de cálculo do app Rescisão CLT - online.</p>
+
+  <script>
+    var SALARIO_MINIMO_2026 = 1621.0;
+
+    function calcular(entradaJson) {
+      try {
+        var d = JSON.parse(entradaJson);
+
+        var salario = Number(d.salario);
+        var saldoFgts = (d.saldoFgts == null) ? 0.0 : Number(d.saldoFgts);
+        var diasNoMes = Math.trunc(Number(d.diasNoMes));
+        var mesesTrabalhados = Math.trunc(Number(d.mesesTrabalhados));
+        var motivo = String(d.motivo || "");
+        var temFeriasVencidas = (d.temFeriasVencidas === true);
+        var tipoAviso = String(d.tipoAviso || "");
+        var diasAvisoNaoCumprido = (d.diasAvisoNaoCumprido == null) ? 30 : Math.trunc(Number(d.diasAvisoNaoCumprido));
+        var anosEmpresa = (d.anosEmpresa == null) ? 0 : Math.trunc(Number(d.anosEmpresa));
+        var feriasVencidasPeriodos = (d.feriasVencidasPeriodos == null) ? (temFeriasVencidas ? 1 : 0) : Math.trunc(Number(d.feriasVencidasPeriodos));
+
+        if (!isFinite(salario) || salario <= 0) return erro("DIGITE UM SALÁRIO VÁLIDO");
+        if (salario < SALARIO_MINIMO_2026) return erro("SALÁRIO ABAIXO DO MÍNIMO 2026 (R$ 1.621)");
+        if (!isFinite(saldoFgts) || saldoFgts < 0) return erro("VALOR DE FGTS INVÁLIDO");
+        if (!Number.isInteger(diasNoMes) || diasNoMes < 1 || diasNoMes > 30) return erro("DIGITE DIAS ENTRE 1 E 30");
+        if (!Number.isInteger(mesesTrabalhados) || mesesTrabalhados < 0 || mesesTrabalhados > 12) return erro("DIGITE MESES ENTRE 0 E 12");
+        if (motivo !== "SEM JUSTA CAUSA" && motivo !== "PEDI DEMISSAO") return erro("MOTIVO INVÁLIDO");
+        if (tipoAviso !== "INDENIZADO" && tipoAviso !== "CUMPRIDO" && tipoAviso !== "NAO CUMPRI") return erro("AVISO PRÉVIO INVÁLIDO");
+        if (!Number.isInteger(diasAvisoNaoCumprido) || diasAvisoNaoCumprido < 1 || diasAvisoNaoCumprido > 30) return erro("DIGITE DIAS DO AVISO ENTRE 1 E 30");
+        if (!Number.isInteger(anosEmpresa) || anosEmpresa < 0 || anosEmpresa > 20) return erro("DIGITE ANOS DE EMPRESA ENTRE 0 E 20");
+        if (!Number.isInteger(feriasVencidasPeriodos) || feriasVencidasPeriodos < 0 || feriasVencidasPeriodos > 3) return erro("PERÍODOS DE FÉRIAS VENCIDAS ENTRE 0 E 3");
+
+        var saldoSalario = diasNoMes > 0 ? (salario / 30.0) * diasNoMes : 0.0;
+
+        // Aviso prévio (Lei 12.506/2011: 30 + 3 por ano, máx 90 dias).
+        // CLT art. 487 §1º + Súmula 305 TST + OJ 82 SDI-1: o aviso prévio
+        // indenizado INTEGRA o tempo de serviço - cada 30 dias soma 1 avo
+        // no 13º proporcional e nas férias proporcionais, e a fração de
+        // 15 dias ou mais já conta como 1 avo (Lei 4.090/62, art. 1º §2º;
+        // CLT art. 146, parágrafo único).
+        var diasAvisoIndenizado = 0;
+        var avosProjecao = 0;
+        var avisoPrevio = 0.0;
+        var avisoDesconto = false;
+        if (motivo === "SEM JUSTA CAUSA" && tipoAviso === "INDENIZADO") {
+          diasAvisoIndenizado = Math.min(30 + anosEmpresa * 3, 90);
+          avisoPrevio = (salario / 30.0) * diasAvisoIndenizado;
+          avosProjecao = Math.floor(diasAvisoIndenizado / 30) + ((diasAvisoIndenizado % 30) >= 15 ? 1 : 0);
+        } else if (motivo === "PEDI DEMISSAO" && tipoAviso === "NAO CUMPRI") {
+          avisoPrevio = -(salario / 30.0) * diasAvisoNaoCumprido;
+          avisoDesconto = true;
+        }
+
+        var avosTotais = mesesTrabalhados + avosProjecao;
+        var decimoTerceiro = avosTotais > 0 ? (salario / 12.0) * avosTotais : 0.0;
+        var feriasBase = avosTotais > 0 ? (salario / 12.0) * avosTotais : 0.0;
+        var feriasProporcionais = feriasBase + feriasBase / 3.0;
+
+        var feriasVencidas = 0.0;
+        if (feriasVencidasPeriodos > 0) {
+          var conjuntoFerias = salario + salario / 3.0;
+          var multiplicador = feriasVencidasPeriodos * 2 - 1;
+          feriasVencidas = conjuntoFerias * multiplicador;
+        }
+
+        var multaFgts = (motivo === "SEM JUSTA CAUSA" && saldoFgts > 0) ? saldoFgts * 0.40 : 0.0;
+
+        var somaTotal = saldoSalario + avisoPrevio + decimoTerceiro +
+                        feriasProporcionais + feriasVencidas + multaFgts;
+        var total = somaTotal < 0 ? 0.0 : somaTotal;
+        var deveParaEmpresa = somaTotal < 0 ? -somaTotal : 0.0;
+
+        return JSON.stringify({
+          ok: true,
+          resultado: {
+            saldoSalario: saldoSalario,
+            avisoPrevio: avisoPrevio,
+            decimoTerceiro: decimoTerceiro,
+            feriasProporcionais: feriasProporcionais,
+            feriasVencidas: feriasVencidas,
+            multaFgts: multaFgts,
+            total: total,
+            diasNoMes: diasNoMes,
+            mesesTrabalhados: mesesTrabalhados,
+            deveParaEmpresa: deveParaEmpresa,
+            avisoDesconto: avisoDesconto,
+            diasAvisoNaoCumprido: diasAvisoNaoCumprido,
+            diasAvisoIndenizado: diasAvisoIndenizado,
+            feriasVencidasPeriodos: feriasVencidasPeriodos,
+            avosTotais: avosTotais
+          }
+        });
+      } catch (e) {
+        return erro("ERRO NO MOTOR DE CÁLCULO - TENTE NOVAMENTE");
+      }
+    }
+
+    function erro(mensagem) {
+      return JSON.stringify({ ok: false, erro: mensagem });
+    }
+  </script>
+</body>
+</html>
