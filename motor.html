@@ -3,108 +3,136 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Motor de Cálculo - Rescisão CLT</title>
+  <title>Política de Privacidade — Rescisão CLT</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      color: #1f2430;
+      background: #f6f7f9;
+      margin: 0;
+      padding: 0;
+      line-height: 1.65;
+    }
+    main {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 24px 20px 64px;
+      background: #ffffff;
+    }
+    h1 { font-size: 1.5rem; margin: 8px 0 4px; }
+    h2 { font-size: 1.12rem; margin-top: 32px; border-bottom: 2px solid #e8eaee; padding-bottom: 6px; }
+    .atualizacao { color: #5b6472; font-size: 0.9rem; margin-bottom: 8px; }
+    .destaque { background: #fff3cd; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+    a { color: #0b57d0; }
+    ul { padding-left: 22px; }
+    li { margin-bottom: 6px; }
+    .rodape { margin-top: 40px; color: #5b6472; font-size: 0.85rem; border-top: 1px solid #e8eaee; padding-top: 16px; }
+  </style>
 </head>
 <body>
-  <p style="font-family:sans-serif;color:#888;font-size:12px">Motor de cálculo do app Rescisão CLT - online.</p>
+<main>
 
-  <script>
-    var SALARIO_MINIMO_2026 = 1621.0;
+  <h1>Política de Privacidade</h1>
+  <p class="atualizacao"><strong>Rescisão CLT</strong> — Última atualização: 31 de outubro de 2026</p>
 
-    function calcular(entradaJson) {
-      try {
-        var d = JSON.parse(entradaJson);
+  <p>Esta Política de Privacidade explica como o aplicativo <strong>Rescisão CLT</strong>
+  ("aplicativo", "nós") trata informações quando você o utiliza. Ao usar o aplicativo,
+  você declara ter lido e concordado com os termos desta política.</p>
 
-        var salario = Number(d.salario);
-        var saldoFgts = (d.saldoFgts == null) ? 0.0 : Number(d.saldoFgts);
-        var diasNoMes = Math.trunc(Number(d.diasNoMes));
-        var mesesTrabalhados = Math.trunc(Number(d.mesesTrabalhados));
-        var motivo = String(d.motivo || "");
-        var temFeriasVencidas = (d.temFeriasVencidas === true);
-        var tipoAviso = String(d.tipoAviso || "");
-        var diasAvisoNaoCumprido = (d.diasAvisoNaoCumprido == null) ? 30 : Math.trunc(Number(d.diasAvisoNaoCumprido));
-        var anosEmpresa = (d.anosEmpresa == null) ? 0 : Math.trunc(Number(d.anosEmpresa));
-        var feriasVencidasPeriodos = (d.feriasVencidasPeriodos == null) ? (temFeriasVencidas ? 1 : 0) : Math.trunc(Number(d.feriasVencidasPeriodos));
+  <h2>1. Sobre o aplicativo</h2>
+  <p>O Rescisão CLT é uma calculadora de verbas rescisórias trabalhistas (CLT) que permite
+  calcular valores como saldo de salário, aviso prévio, 13º proporcional, férias, multa de
+  40% do FGTS e gerar um recibo em PDF no próprio aparelho. O aplicativo não tem cadastro,
+  não exige login e não é destinado a crianças.</p>
 
-        if (!isFinite(salario) || salario <= 0) return erro("DIGITE UM SALÁRIO VÁLIDO");
-        if (salario < SALARIO_MINIMO_2026) return erro("SALÁRIO ABAIXO DO MÍNIMO 2026 (R$ 1.621)");
-        if (!isFinite(saldoFgts) || saldoFgts < 0) return erro("VALOR DE FGTS INVÁLIDO");
-        if (!Number.isInteger(diasNoMes) || diasNoMes < 1 || diasNoMes > 30) return erro("DIGITE DIAS ENTRE 1 E 30");
-        if (!Number.isInteger(mesesTrabalhados) || mesesTrabalhados < 0 || mesesTrabalhados > 12) return erro("DIGITE MESES ENTRE 0 E 12");
-        if (motivo !== "SEM JUSTA CAUSA" && motivo !== "PEDI DEMISSAO") return erro("MOTIVO INVÁLIDO");
-        if (tipoAviso !== "INDENIZADO" && tipoAviso !== "CUMPRIDO" && tipoAviso !== "NAO CUMPRI") return erro("AVISO PRÉVIO INVÁLIDO");
-        if (!Number.isInteger(diasAvisoNaoCumprido) || diasAvisoNaoCumprido < 1 || diasAvisoNaoCumprido > 30) return erro("DIGITE DIAS DO AVISO ENTRE 1 E 30");
-        if (!Number.isInteger(anosEmpresa) || anosEmpresa < 0 || anosEmpresa > 20) return erro("DIGITE ANOS DE EMPRESA ENTRE 0 E 20");
-        if (!Number.isInteger(feriasVencidasPeriodos) || feriasVencidasPeriodos < 0 || feriasVencidasPeriodos > 3) return erro("PERÍODOS DE FÉRIAS VENCIDAS ENTRE 0 E 3");
+  <h2>2. Dados que o aplicativo processa</h2>
+  <ul>
+    <li><strong>Dados digitados no cálculo</strong> (salário, saldo do FGTS, dias e meses
+    trabalhados, motivo da saída, aviso prévio, tempo de empresa e períodos de férias):
+    são utilizados exclusivamente para realizar o cálculo. O processamento é feito em um
+    serviço de cálculo hospedado no GitHub Pages, acessado pela internet com conexão
+    segura (HTTPS). Nós <strong>não possuímos banco de dados</strong> e
+    <strong>não armazenamos</strong> esses valores após a resposta do cálculo.</li>
+    <li><strong>Documento PDF</strong>: o recibo de cálculo é gerado e salvo apenas em uma
+    pasta temporária (cache) do seu próprio aparelho e só sai do dispositivo se você
+    optar por compartilhá-lo. O sistema Android pode apagar essa pasta temporária a
+    qualquer momento.</li>
+    <li><strong>Dados de anúncios</strong>: o aplicativo exibe anúncios por meio da
+    plataforma Google AdMob, conforme descrito na seção 3.</li>
+  </ul>
 
-        var saldoSalario = diasNoMes > 0 ? (salario / 30.0) * diasNoMes : 0.0;
+  <h2>3. Anúncios — Google AdMob</h2>
+  <p>O aplicativo utiliza o serviço de publicidade <strong>Google AdMob</strong>
+  (Google Play Services). Para exibir anúncios, a Google pode coletar e tratar dados como:
+  identificador de publicidade do dispositivo, identificadores do aparelho, endereço IP,
+  informações aproximadas de região e dados de interação com os anúncios exibidos.
+  Esses dados podem ser usados para personalizar ou não os anúncios, de acordo com as
+  configurações do seu dispositivo.</p>
+  <p>Você pode gerenciar a publicidade personalizada do Android em:
+  <em>Configurações &gt; Google &gt; Anúncios</em> (ou <em>Privacidade &gt; Anúncios</em>,
+  conforme a versão do sistema), onde é possível desativar a personalização e excluir o
+  identificador de publicidade. Saiba mais sobre como a Google usa dados em:</p>
+  <ul>
+    <li><a href="https://policies.google.com/technologies/ads" rel="noopener">Política de Publicidade da Google</a></li>
+    <li><a href="https://policies.google.com/privacy" rel="noopener">Política de Privacidade da Google</a></li>
+  </ul>
 
-        // Aviso prévio (Lei 12.506/2011: 30 + 3 por ano, máx 90 dias).
-        // CLT art. 487 §1º + Súmula 305 TST + OJ 82 SDI-1: o aviso prévio
-        // indenizado INTEGRA o tempo de serviço - cada 30 dias soma 1 avo
-        // no 13º proporcional e nas férias proporcionais, e a fração de
-        // 15 dias ou mais já conta como 1 avo (Lei 4.090/62, art. 1º §2º;
-        // CLT art. 146, parágrafo único).
-        var diasAvisoIndenizado = 0;
-        var avosProjecao = 0;
-        var avisoPrevio = 0.0;
-        var avisoDesconto = false;
-        if (motivo === "SEM JUSTA CAUSA" && tipoAviso === "INDENIZADO") {
-          diasAvisoIndenizado = Math.min(30 + anosEmpresa * 3, 90);
-          avisoPrevio = (salario / 30.0) * diasAvisoIndenizado;
-          avosProjecao = Math.floor(diasAvisoIndenizado / 30) + ((diasAvisoIndenizado % 30) >= 15 ? 1 : 0);
-        } else if (motivo === "PEDI DEMISSAO" && tipoAviso === "NAO CUMPRI") {
-          avisoPrevio = -(salario / 30.0) * diasAvisoNaoCumprido;
-          avisoDesconto = true;
-        }
+  <h2>4. Serviços de terceiros utilizados</h2>
+  <ul>
+    <li><strong>Google AdMob / Google Play Services</strong> — exibição de anúncios
+    (tratamento de dados conforme as políticas da Google, citadas acima).</li>
+    <li><strong>GitHub Pages</strong> (GitHub, Inc.) — hospedagem do serviço de cálculo.
+    O acesso ao serviço envolve tratamento técnico padrão de dados de conexão pelo GitHub,
+    conforme o <a href="https://docs.github.com/pt/site-policy/privacy-policies/github-general-privacy-statement" rel="noopener">aviso de privacidade do GitHub</a>.</li>
+  </ul>
 
-        var avosTotais = mesesTrabalhados + avosProjecao;
-        var decimoTerceiro = avosTotais > 0 ? (salario / 12.0) * avosTotais : 0.0;
-        var feriasBase = avosTotais > 0 ? (salario / 12.0) * avosTotais : 0.0;
-        var feriasProporcionais = feriasBase + feriasBase / 3.0;
+  <h2>5. Dados que NÃO coletamos</h2>
+  <ul>
+    <li>Nome, e-mail, telefone ou dados de contato do usuário;</li>
+    <li>Localização precisa;</li>
+    <li>Fotos, contatos, arquivos pessoais ou dados sensíveis;</li>
+    <li>Quaisquer dados de crianças — o aplicativo não é dirigido a menores de 18 anos.</li>
+  </ul>
 
-        var feriasVencidas = 0.0;
-        if (feriasVencidasPeriodos > 0) {
-          var conjuntoFerias = salario + salario / 3.0;
-          var multiplicador = feriasVencidasPeriodos * 2 - 1;
-          feriasVencidas = conjuntoFerias * multiplicador;
-        }
+  <h2>6. Permissões do Android</h2>
+  <ul>
+    <li><strong>INTERNET</strong> — necessária para enviar os dados do cálculo ao serviço
+    de cálculo e carregar os anúncios;</li>
+    <li><strong>ACCESS_NETWORK_STATE</strong> — necessária para verificar se há conexão
+    com a internet antes de calcular.</li>
+  </ul>
+  <p>O aplicativo não solicita nenhuma outra permissão.</p>
 
-        var multaFgts = (motivo === "SEM JUSTA CAUSA" && saldoFgts > 0) ? saldoFgts * 0.40 : 0.0;
+  <h2>7. Segurança e retenção</h2>
+  <p>A comunicação com o serviço de cálculo utiliza HTTPS. Não mantemos servidores próprios
+  de armazenamento de dados dos usuários e não retemos os valores digitados no cálculo.
+  Os dados de publicidade são tratados pela Google conforme as políticas dela.</p>
 
-        var somaTotal = saldoSalario + avisoPrevio + decimoTerceiro +
-                        feriasProporcionais + feriasVencidas + multaFgts;
-        var total = somaTotal < 0 ? 0.0 : somaTotal;
-        var deveParaEmpresa = somaTotal < 0 ? -somaTotal : 0.0;
+  <h2>8. Seus direitos (LGPD — Lei nº 13.709/2018)</h2>
+  <p>Como titular de dados pessoais, você pode solicitar a qualquer momento: confirmação de
+  tratamento, acesso aos dados, correção de dados incompletos ou desatualizados,
+  anonimização, bloqueio ou eliminação de dados desnecessários, portabilidade, informação
+  sobre com quem os dados foram compartilhados e revogação do consentimento. Como o
+  aplicativo não armazena seus dados de cálculo, remover o aplicativo do aparelho elimina
+  os dados locais. Para dados relacionados a anúncios, utilize as configurações do
+  dispositivo (seção 3) ou contate a Google. Para qualquer pedido a nós relacionado,
+  utilize o contato da seção 10.</p>
 
-        return JSON.stringify({
-          ok: true,
-          resultado: {
-            saldoSalario: saldoSalario,
-            avisoPrevio: avisoPrevio,
-            decimoTerceiro: decimoTerceiro,
-            feriasProporcionais: feriasProporcionais,
-            feriasVencidas: feriasVencidas,
-            multaFgts: multaFgts,
-            total: total,
-            diasNoMes: diasNoMes,
-            mesesTrabalhados: mesesTrabalhados,
-            deveParaEmpresa: deveParaEmpresa,
-            avisoDesconto: avisoDesconto,
-            diasAvisoNaoCumprido: diasAvisoNaoCumprido,
-            diasAvisoIndenizado: diasAvisoIndenizado,
-            feriasVencidasPeriodos: feriasVencidasPeriodos,
-            avosTotais: avosTotais
-          }
-        });
-      } catch (e) {
-        return erro("ERRO NO MOTOR DE CÁLCULO - TENTE NOVAMENTE");
-      }
-    }
+  <h2>9. Alterações desta política</h2>
+  <p>Esta política pode ser atualizada para refletir mudanças no aplicativo ou na
+  legislação. A data da "última atualização" no topo da página indicará a versão vigente.</p>
 
-    function erro(mensagem) {
-      return JSON.stringify({ ok: false, erro: mensagem });
-    }
-  </script>
+  <h2>10. Contato</h2>
+  <!-- >>> ANTES DE PUBLICAR: substitua o e-mail abaixo pelo seu e-mail real (2 lugares: aqui e no texto). <<< -->
+  <p>Dúvidas, solicitações ou reclamações sobre esta política podem ser enviadas para:
+  <span class="destaque">tiodaweb03@gmail.com</span></p>
+  <p>Prefeitura/órgão de defesa do consumidor e a Autoridade Nacional de Proteção de Dados
+  (ANPD) também podem receber denúncias, se necessário.</p>
+
+  <p class="rodape">Rescisão CLT — Política de Privacidade — vigente a partir de 31/10/2026.
+  Este documento é fornecido para facilitar a conformidade do aplicativo e não constitui
+  aconselhamento jurídico.</p>
+
+</main>
 </body>
 </html>
